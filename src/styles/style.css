@@ -134,10 +134,24 @@ p.note {
     padding-top:0px;
 }
 
-/* #chart-1 {
+a {
+    text-decoration: none;
+    font-weight: 600;
+    background: linear-gradient(to top, rgba(143, 211, 143, 0.699) 25%, transparent 15%);
+}
+
+h2.chart-headline {
+    margin-bottom: 3px;
+}
+
+p.chart-description {
+    margin-top: 3px;
+}
+
+#map {
     width: 100%;
-    height: 35%;
-} */
+    height: 350px;
+}
 
 
 .chart-row {
