@@ -10,8 +10,8 @@ We have a few visualizations that we made to help figure out our angle, but that
 ### Where did the data come from?
 Recycling data comes from NYC Open Data. We might now use all of them, but they're there in case we want to!
 * <a href='https://data.cityofnewyork.us/City-Government/DSNY-Monthly-Tonnage-Data/ebb7-mvp5' target="_blank">Monthly Tonnage Data</a>
-* <a href='https://data.cityofnewyork.us/Environment/Public-Recycling-Bins/sxx4-xhzg" target="_blank">Public Recycling Baskets</a>
-* <a href='https://data.cityofnewyork.us/Environment/Recycling-Diversion-and-Capture-Rates/gaq9-z3hz" target="_blank">Recycling Diversion and Capture Rates</a>
+* <a href='https://data.cityofnewyork.us/Environment/Public-Recycling-Bins/sxx4-xhzg' target="_blank">Public Recycling Baskets</a>
+* <a href='https://data.cityofnewyork.us/Environment/Recycling-Diversion-and-Capture-Rates/gaq9-z3hz' target="_blank">Recycling Diversion and Capture Rates</a>
 * <a href='https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9' target="_blank">311 missed recycling pick up</a>
 * <a href='https://data.cityofnewyork.us/City-Government/Agency-Performance-Mapping-Indicators-Annual/gsj6-6rwm' target="_blank">Agency performance</a>
  
