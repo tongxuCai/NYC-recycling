@@ -1,9 +1,9 @@
-# NYC-Recycling
+# ✨ Recycling In The City ✨
 We're looking at the relationship between recycling in New York City's community districts and a neighborhood's key demographics: wealth, race and education level. This was created by Sawyer Click, Frida Cai and Aseem Shukla for the final project in Soma's Storytelling class at Columbia Journalism School.
 
 Check out the whole gizmo here: https://nyc-recycling.netlify.com/
 ### What have we found so far?
-Over the last 10 years, recycling in the wealthiest community districts has dwindled. Less affluent districts have started recycling more.
+Over the last 10 years, recycling in the wealthiest community districts has dwindled. Less affluent districts have started recycling more.![alt-text-2](https://github.com/SawyerClick/NYC-Recycling/blob/master/src/images/Annotation%202019-11-20%20003809.png "NYC's Community Districts")
 
 ### Current Status
 We have a few visualizations that we made to help figure out our angle, but that's about it. We're trying to gather census data now to tie together how demographics play a role in a neighborhood's recycling habits.
