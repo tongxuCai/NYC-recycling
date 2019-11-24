@@ -1,5 +1,4 @@
 import * as d3 from 'd3'
-import * as topojson from 'topojson'
 
 const margin = { top: 0, left: 0, right: 0, bottom: 0 }
 const height = 600 - margin.top - margin.bottom
@@ -13,49 +12,44 @@ const svg = d3
   .append('g')
   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-const projection = d3
-  .geoMercator()
-  .scale(57000)
-  .translate([width / 2, height / 2])
-const path = d3.geoPath().projection(projection)
+const xPositionScale = d3
+  .scaleLinear()
+  .domain([0, 70])
+  .range([0, 700])
 
-Promise.all([
-  d3.json(require('/data/joined_data.json')),
-  d3.csv(require('/data/Textile_Drop-Off_Locations_in_NYC.csv'))
-])
+const yPositionScale = d3
+  .scaleLinear()
+  .domain([0, 1])
+  .range([500, 0])
+
+d3.csv(require('/data/bin-and-pct.csv'))
   .then(ready)
-  .catch(err => console.log('Failed on', err))
+  .catch(function(err) {
+    console.log('Failed with', err)
+  })
 
-function ready([json, datapoints]) {
-  const districts = topojson.feature(json, json.objects.joined_data)
-  const center = d3.geoCentroid(districts)
-  projection.center(center)
-
-  svg
-    .selectAll('path')
-    .data(districts.features)
-    .enter()
-    .append('path')
-    .attr('class', 'districts')
-    .attr('d', path)
-    .attr('stroke', function(d) {
-      return 'none'
-    })
-    .attr('fill', 'lightgray')
-    .attr('opacity', 1)
-
+function ready(datapoints) {
+  console.log(datapoints)
   svg
     .selectAll('circle')
     .data(datapoints)
     .enter()
     .append('circle')
-    .attr('r', 2)
-    .attr('class', 'bins')
-    .attr('stroke', 'none')
-    .attr('opacity', 0.55)
-    .attr('fill', 'green')
-    .attr('transform', function(d) {
-      const coords = [d.Longitude, d.Latitude]
-      return `translate(${projection(coords)})`
-    })
+    .attr('r', 5)
+    .attr('fill', 'lightgrey')
+    .attr('cx', d => xPositionScale(d.CountBoroCD))
+    .attr('cy', d => yPositionScale(d.pct_recyc_2018))
+
+  const yAxis = d3.axisLeft(yPositionScale)
+  svg
+    .append('g')
+    .attr('class', 'axis y-axis')
+    .call(yAxis)
+
+  const xAxis = d3.axisBottom(xPositionScale)
+  svg
+    .append('g')
+    .attr('class', 'axis x-axis')
+    .attr('transform', 'translate(0,' + height + ')')
+    .call(xAxis)
 }
