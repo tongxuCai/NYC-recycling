@@ -24,12 +24,12 @@ d3.csv(require('/data/joined_and_tonnage.csv'))
 
 function ready(datapoints) {
   const filtered = datapoints.filter(function(d) {
-    if (+d.year === 2019) {
+    if (+d.year === 2018) {
       return d
     }
   })
 
-  console.log(filtered)
+  // console.log(filtered)
 
   const nested = d3
     .nest()
@@ -53,7 +53,7 @@ function ready(datapoints) {
   colorScale.domain(keys)
   xPositionScale.domain(keys)
 
-  console.log(nested)
+  // console.log(nested)
 
   svg
     .selectAll('.boroughs')
@@ -84,7 +84,7 @@ function ready(datapoints) {
       })
       const keys = nested.map(d => d.key)
       xPositionScale.domain(keys)
-      console.log(keys[0])
+      // console.log(keys[0])
 
       const radiusExtent = nested.map(d => d.value[column])
       radiusScale.domain(d3.extent(radiusExtent))

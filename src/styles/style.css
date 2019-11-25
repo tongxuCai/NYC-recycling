@@ -195,7 +195,51 @@ p.chart-source {
     margin:0;
 }
 
+.tooltip {
+    width: 150px;
+    background: rgba(245, 245, 245, 0.829);
+    border-radius: 10px;
+    text-align: center;
+}
 
+.tooltip > p {
+    margin: 3px auto;
+}
+
+.slidecontainer {
+    width: 100%;
+  }
+  
+  .slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 10px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
+  
+  .slider:hover {
+    opacity: 1;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #333;
+    cursor: pointer;
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 25px;
+    height: 10px;
+    background: #333;
+    cursor: pointer;
+  }
 
 
 

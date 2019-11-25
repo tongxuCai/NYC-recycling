@@ -36,7 +36,7 @@ function ready([json, datapoints]) {
     .data(districts.features)
     .enter()
     .append('path')
-    .attr('class', 'districts')
+    .attr('class', 'districts-2')
     .attr('d', path)
     .attr('stroke', function(d) {
       return 'none'

@@ -31,7 +31,7 @@ d3.csv(require('/data/bin-and-pct.csv'))
   })
 
 function ready(datapoints) {
-  console.log(datapoints)
+  // console.log(datapoints)
   svg
     .selectAll('circle')
     .data(datapoints)
