@@ -136,6 +136,7 @@ p.note {
 
 a {
     text-decoration: none;
+    color: inherit;
     font-weight: 600;
     background: linear-gradient(to top, rgba(143, 211, 143, 0.699) 25%, transparent 15%);
 }
