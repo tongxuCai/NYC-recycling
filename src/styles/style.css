@@ -152,6 +152,7 @@ h2.chart-headline {
 
 p.chart-description {
     margin-top: 3px;
+    margin-bottom: 0;
 }
 
 #map {
@@ -214,7 +215,7 @@ p.chart-source {
 .tooltip {
     line-height: 1;
     padding: 12px;
-    background: rgba(245, 245, 245, 0.85);
+    background: rgba(245, 245, 245, 0.95);
     color: #333;
     border-radius: 7px;
     pointer-events: none;
@@ -227,7 +228,7 @@ p.chart-source {
     font-size: 28px;
     width: 100%;
     line-height: .4;
-    color: rgba(245, 245, 245, 0.85);
+    color: rgba(245, 245, 245, 0.95);
     position: absolute;
     pointer-events: none;
     border-radius: 50%;

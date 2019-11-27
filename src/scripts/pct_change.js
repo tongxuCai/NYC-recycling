@@ -5,8 +5,8 @@ import d3Annotation from 'd3-svg-annotation'
 d3.tip = d3Tip
 
 const margin = { top: 10, left: 0, right: 0, bottom: 10 }
-const height = 450 - margin.top - margin.bottom
-const width = 750 - margin.left - margin.right
+const height = 550 - margin.top - margin.bottom
+const width = 800 - margin.left - margin.right
 
 const svg = d3
   .select('#chart-change')
@@ -16,13 +16,9 @@ const svg = d3
   .append('g')
   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-const projection = d3
-  .geoMercator()
-  .scale(57000)
-  .translate([width / 2, height / 2])
+const projection = d3.geoMercator().translate([width / 2, height / 2])
 const path = d3.geoPath().projection(projection)
 
-// const boroughColorScale = d3.scaleOrdinal(d3.schemePastel1)
 const colorScalePositive = d3.scaleSequential(d3.interpolateBlues)
 const colorScaleNegative = d3.scaleSequential(d3.interpolateReds)
 
@@ -31,7 +27,7 @@ const radiusScale = d3.scaleSqrt().range([1, 20])
 const tip = d3
   .tip()
   .attr('class', 'tooltip')
-  .offset([0, 0])
+  .offset([-15, 0])
   .html(function(d) {
     return `<strong>${d.properties.cd_short_title}</strong>
     <p>2018: ${d3.format('.0%')(d.properties.pct_recyc_2018)}</p>
@@ -48,6 +44,7 @@ function ready(datapoints) {
   const districts = topojson.feature(datapoints, datapoints.objects.joined_data)
   const center = d3.geoCentroid(districts)
   projection.center(center)
+  projection.fitSize([width, height], districts)
 
   const percentRecycledExtent = districts.features.map(
     d => +d.properties.pct_change
@@ -59,8 +56,6 @@ function ready(datapoints) {
   const povertyExtent = d3.extent(
     districts.features.map(d => d.properties.poverty_rate)
   )
-
-  // console.log()
 
   svg
     .selectAll('.districts')
@@ -99,39 +94,88 @@ function ready(datapoints) {
         .attr('stroke', 'none')
     })
 
+  svg
+    .append('text')
+    .style('font-weight', 600)
+    .style('font-size', 42)
+    .attr('class', 'poverty-level-percent')
+  svg
+    .append('text')
+    .style('font-weight', 400)
+    .style('font-size', 32)
+    .attr('class', 'poverty-level-poverty')
+    .text('poverty')
+  svg
+    .append('text')
+    .style('font-weight', 400)
+    .style('font-size', 32)
+    .attr('class', 'poverty-level-rate')
+    .text('rate')
+
   svg.call(tip)
 
-  const updatePoverty = level => {
-    slider.attr('value', level)
-    d3.select('p#value').text(level + '% poverty level')
-  }
+  // const updatePoverty = level => {
+  //   slider.attr('value', level)
+  // }
 
   const slider = d3
     .select('#myRange')
     .attr('type', 'range')
     .attr('min', 4)
-    .attr('max', 36)
+    .attr('max', 37)
     .attr('step', 4)
-    .on('input', function() {
-      const value = this.value
+    .style('visibility', 'hidden')
+  //   .on('input', function() {
+  //     const value = this.value
 
-      d3.selectAll('.districts').attr('fill', function(d) {
-        if (d.properties.poverty_rate < value) {
-          return 'lightgray'
+  //     d3.selectAll('.districts').attr('fill', function(d) {
+  //       if (d.properties.poverty_rate < value) {
+  //         return 'lightgray'
+  //       } else {
+  //         if (+d.properties.pct_change > 0) {
+  //           return colorScalePositive(+d.properties.pct_change)
+  //         } else if (+d.properties.pct_change < 0) {
+  //           return colorScaleNegative(+d.properties.pct_change)
+  //         } else {
+  //           return 'lightgray'
+  //         }
+  //       }
+  //     })
+  //     updatePoverty(value)
+  //   })
+
+  // updatePoverty(7)
+
+  let counter = 7
+  function f() {
+    counter = counter + 2
+    if (counter > 37) {
+      counter = 7
+    }
+
+    // console.log(counter)
+    slider.attr('value', counter)
+    d3.select('.poverty-level-percent').text(counter + '%')
+
+    d3.selectAll('.districts').attr('fill', function(d) {
+      if (d.properties.poverty_rate < counter) {
+        return 'lightgray'
+      } else {
+        if (+d.properties.pct_change > 0) {
+          return colorScalePositive(+d.properties.pct_change)
+        } else if (+d.properties.pct_change < 0) {
+          return colorScaleNegative(+d.properties.pct_change)
         } else {
-          if (+d.properties.pct_change > 0) {
-            return colorScalePositive(+d.properties.pct_change)
-          } else if (+d.properties.pct_change < 0) {
-            return colorScaleNegative(+d.properties.pct_change)
-          } else {
-            return 'lightgray'
-          }
+          return 'lightgray'
         }
-      })
-      updatePoverty(value)
+      }
     })
+    // updatePoverty(counter)
 
-  updatePoverty(4)
+    return true
+  }
+
+  setInterval(f, 700)
 
   function render() {
     const svgContainer = svg.node().closest('div')
@@ -145,10 +189,23 @@ function ready(datapoints) {
     const newHeight = svgHeight - margin.top - margin.bottom
 
     // Update our scale
+    projection.center(center)
     projection.fitSize([newWidth, newHeight], districts)
 
     // Update things you draw
     svg.selectAll('.districts').attr('d', path)
+    svg
+      .select('.poverty-level-percent')
+      .attr('x', newWidth / 5)
+      .attr('y', newHeight * 0.45)
+    svg
+      .select('.poverty-level-poverty')
+      .attr('x', newWidth / 5)
+      .attr('y', newHeight * 0.5)
+    svg
+      .select('.poverty-level-rate')
+      .attr('x', newWidth / 5)
+      .attr('y', newHeight * 0.555)
   }
 
   window.addEventListener('resize', render)
