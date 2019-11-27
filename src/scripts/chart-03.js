@@ -55,4 +55,5 @@ function ready(datapoints) {
     .attr('class', 'axis x-axis')
     .attr('transform', 'translate(0,' + height + ')')
     .call(xAxis)
+
 }

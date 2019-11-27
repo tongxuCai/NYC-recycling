@@ -1,7 +1,12 @@
 body {
     margin:auto;
     padding:50px 10px;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Montserrat', sans-serif;
+    background: whitesmoke;
+}
+
+p {
+    line-height: 1.5;
 }
 
 img {
@@ -13,7 +18,7 @@ img {
 }
 
 .sans-serif {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Montserrat', sans-serif;
 }
 
 /* choose a light or dark theme to add to the body tag. */
@@ -103,7 +108,7 @@ h3.section-head {
 
 .byline {
     font-size: 1.1rem;
-    line-height: 0.75;
+    line-height: 1;
     margin-top: 1.5rem;
     font-weight: 500;
 }
@@ -195,21 +200,76 @@ p.chart-source {
     margin:0;
 }
 
-.tooltip {
-    width: 150px;
-    background: rgba(245, 245, 245, 0.829);
-    border-radius: 10px;
-    text-align: center;
+.districts {
+    transition: 0s all; 
+    transform-origin: 50% 50%;
+    transform-box: fill-box;
 }
 
 .tooltip > p {
     margin: 3px auto;
+    font-weight: 600;
 }
+
+.tooltip {
+    line-height: 1;
+    padding: 12px;
+    background: rgba(245, 245, 245, 0.85);
+    color: #333;
+    border-radius: 7px;
+    pointer-events: none;
+    text-align: justify;
+  }
+  /* Creates a small triangle extender for the tooltip */
+  .tooltip:after {
+    box-sizing: border-box;
+    display: inline;
+    font-size: 28px;
+    width: 100%;
+    line-height: .4;
+    color: rgba(245, 245, 245, 0.85);
+    position: absolute;
+    pointer-events: none;
+    border-radius: 50%;
+  }
+  /* Northward tooltips */
+  .tooltip.n:after {
+    content: "\25BC";
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+    text-align: center;
+  }
+  /* Eastward tooltips */
+  .tooltip.e:after {
+    content: "\25C0";
+    margin: -4px 0 0 0;
+    top: 50%;
+    left: -8px;
+  }
+  /* Southward tooltips */
+  .tooltip.s:after {
+    content: "\25B2";
+    margin: 0 0 1px 0;
+    top: -8px;
+    left: 0;
+    text-align: center;
+  }
+  /* Westward tooltips */
+  .tooltip.w:after {
+    content: "\25B6";
+    margin: -4px 0 0 -1px;
+    top: 50%;
+    left: 100%;
+  }
+  .center {
+      text-align: left;
+  }
 
 .slidecontainer {
     width: 100%;
   }
-  
+
   .slider {
     -webkit-appearance: none;
     width: 100%;

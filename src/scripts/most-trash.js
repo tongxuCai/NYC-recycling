@@ -37,14 +37,17 @@ function ready(datapoints) {
     .rollup(function(d) {
       return {
         totalWaste: d3.sum(d, f => +f.REFUSETONSCOLLECTED),
-        meanWaste: d3.mean(d, f => +f.REFUSETONSCOLLECTED),
+        meanWaste: d3.median(d, f => +f.REFUSETONSCOLLECTED),
         totalRecycled: d3.median(d, f => +f.REFUSETONSCOLLECTED / +f.acres),
-        pctRecycled: d3.mean(
+        pctRecycled: d3.median(
           d,
-          f => +f.total_recycled / +f.REFUSETONSCOLLECTED / +f.acres
+          f => +f.total_recycled / +f.REFUSETONSCOLLECTED
         ),
         povertyRate: d3.median(d, f => +f.poverty_rate),
-        recyclePerCapita: d3.sum(d, f => +f.pop_acs / +f.total_recycled)
+        recyclePerCapita: d3.sum(d, f => +f.pop_acs / +f.total_recycled),
+        pct2009: d3.median(d, f => +f.pct_recyc_2009),
+        pct2018: d3.median(d, f => +f.pct_recyc_2018),
+        pctChange: d3.median(d, f => +f.pct_change)
       }
     })
     .entries(filtered)
@@ -75,7 +78,20 @@ function ready(datapoints) {
     .attr('class', 'labels')
     .attr('alignment-baseline', 'middle')
     .attr('text-anchor', 'middle')
+    .style('font-size', 14)
     .attr('x', d => xPositionScale(d.key))
+
+  svg
+    .append('text')
+    .attr('class', 'max')
+    .attr('alignment-baseline', 'middle')
+    .attr('text-anchor', 'middle')
+
+  svg
+    .append('text')
+    .attr('class', 'min')
+    .attr('alignment-baseline', 'middle')
+    .attr('text-anchor', 'middle')
 
   function step(stepNum, column) {
     d3.select('#step-' + stepNum).on('stepin', function() {
@@ -86,8 +102,15 @@ function ready(datapoints) {
       xPositionScale.domain(keys)
       // console.log(keys[0])
 
-      const radiusExtent = nested.map(d => d.value[column])
-      radiusScale.domain(d3.extent(radiusExtent))
+      const radiusExtent = d3.extent(nested.map(d => d.value[column]))
+
+      if (column === 'pct2009') {
+        radiusScale.domain([0, 0.35])
+      } else if (column === 'pct2018') {
+        radiusScale.domain([0, 0.35])
+      } else {
+        radiusScale.domain(radiusExtent)
+      }
 
       svg
         .selectAll('.boroughs')
@@ -105,12 +128,22 @@ function ready(datapoints) {
         .duration(700)
         .attr('y', height / 2)
         .attr('x', d => xPositionScale(d.key))
+
+      svg
+        .select('.max')
+        .text('')
+        .text(d3.format('.0%')(radiusExtent[1]))
+
+      svg
+        .select('.min')
+        .text('')
+        .text(d3.format('.0%')(radiusExtent[0]) + ' recycled')
     })
   }
 
-  step(1, 'totalWaste')
-  step(2, 'meanWaste')
-  step(3, 'totalRecycled')
+  step(1, 'pct2009')
+  step(2, 'pct2018')
+  step(3, 'pctChange')
   step(4, 'pctRecycled')
   step(5, 'povertyRate')
   step(6, 'recyclePerCapita')
@@ -137,7 +170,7 @@ function ready(datapoints) {
 
     // Update our scale
     xPositionScale.range([0, newWidth])
-    radiusScale.range([3, newWidth * 0.11])
+    radiusScale.range([5, newWidth * 0.11])
 
     // Update things you draw
     svg
@@ -148,8 +181,14 @@ function ready(datapoints) {
     svg
       .selectAll('.labels')
       .attr('y', newHeight / 2)
-      .attr('dy', 75)
+      .attr('dy', 80)
       .attr('x', d => xPositionScale(d.key))
+
+    svg
+      .selectAll('.max')
+      .attr('x', xPositionScale(nested[nested.length - 1].key))
+
+    svg.selectAll('.min').attr('x', xPositionScale(nested[0].key))
   }
 
   // When the window resizes, run the function

@@ -32,7 +32,7 @@ function ready([json, datapoints]) {
   projection.center(center)
 
   svg
-    .selectAll('path')
+    .selectAll('.districts-2')
     .data(districts.features)
     .enter()
     .append('path')
@@ -45,7 +45,7 @@ function ready([json, datapoints]) {
     .attr('opacity', 1)
 
   svg
-    .selectAll('circle')
+    .selectAll('.bins')
     .data(datapoints)
     .enter()
     .append('circle')
@@ -58,4 +58,29 @@ function ready([json, datapoints]) {
       const coords = [d.Longitude, d.Latitude]
       return `translate(${projection(coords)})`
     })
+
+  function render() {
+    const svgContainer = svg.node().closest('div')
+    const svgWidth = svgContainer.offsetWidth
+    const svgHeight = height + margin.top + margin.bottom
+
+    const actualSvg = d3.select(svg.node().closest('svg'))
+    actualSvg.attr('width', svgWidth).attr('height', svgHeight)
+
+    const newWidth = svgWidth - margin.left - margin.right
+    const newHeight = svgHeight - margin.top - margin.bottom
+
+    // Update our scale
+    projection.fitSize([newWidth, newHeight], districts)
+
+    // Update things you draw
+    svg.selectAll('.districts-2').attr('d', path)
+    svg.selectAll('.bins').attr('transform', function(d) {
+      const coords = [d.Longitude, d.Latitude]
+      return `translate(${projection(coords)})`
+    })
+  }
+
+  window.addEventListener('resize', render)
+  render()
 }

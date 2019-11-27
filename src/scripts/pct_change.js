@@ -4,8 +4,8 @@ import d3Tip from 'd3-tip'
 import d3Annotation from 'd3-svg-annotation'
 d3.tip = d3Tip
 
-const margin = { top: 0, left: 0, right: 0, bottom: 0 }
-const height = 600 - margin.top - margin.bottom
+const margin = { top: 10, left: 0, right: 0, bottom: 10 }
+const height = 450 - margin.top - margin.bottom
 const width = 750 - margin.left - margin.right
 
 const svg = d3
@@ -84,6 +84,20 @@ function ready(datapoints) {
     .attr('opacity', 1)
     .on('mouseover', tip.show)
     .on('mouseout', tip.hide)
+    .on('mouseenter', function() {
+      d3.select(this)
+        .raise()
+        .transition()
+        .style('transform', 'scale(1.15,1.15)')
+        .attr('stroke', '#444')
+    })
+    .on('mouseleave', function() {
+      d3.select(this)
+        .lower()
+        .transition()
+        .style('transform', 'scale(1,1)')
+        .attr('stroke', 'none')
+    })
 
   svg.call(tip)
 
@@ -119,19 +133,24 @@ function ready(datapoints) {
 
   updatePoverty(4)
 
-  // slider
-  //   .attr('min', 7)
-  //   .attr('max', 35)
-  //   .attr('value', d3.mean(povertyExtent))
-  //   .attr('step', 1)
-  //   .on('input', function() {
-  //     const value = this.value
-  //     d3.select('p#value').text(value)
+  function render() {
+    const svgContainer = svg.node().closest('div')
+    const svgWidth = svgContainer.offsetWidth
+    const svgHeight = height + margin.top + margin.bottom
 
-  //     svg
-  //       .selectAll('.districts')
-  //       .transition()
-  //       .duration(750)
-  //       .attr('fill-opacity', 0)
-  //   })
+    const actualSvg = d3.select(svg.node().closest('svg'))
+    actualSvg.attr('width', svgWidth).attr('height', svgHeight)
+
+    const newWidth = svgWidth - margin.left - margin.right
+    const newHeight = svgHeight - margin.top - margin.bottom
+
+    // Update our scale
+    projection.fitSize([newWidth, newHeight], districts)
+
+    // Update things you draw
+    svg.selectAll('.districts').attr('d', path)
+  }
+
+  window.addEventListener('resize', render)
+  render()
 }
