@@ -1,9 +1,9 @@
 import * as d3 from 'd3'
 import * as topojson from 'topojson'
 
-const margin = { top: 0, left: 0, right: 0, bottom: 0 }
-const height = 600 - margin.top - margin.bottom
-const width = 750 - margin.left - margin.right
+const margin = { top: 10, left: 0, right: 0, bottom: 10 }
+const height = 550 - margin.top - margin.bottom
+const width = 800 - margin.left - margin.right
 
 const svg = d3
   .select('#chart-2')
@@ -13,15 +13,13 @@ const svg = d3
   .append('g')
   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-const projection = d3
-  .geoMercator()
-  .scale(57000)
-  .translate([width / 2, height / 2])
+const projection = d3.geoMercator().translate([width / 2, height / 2])
 const path = d3.geoPath().projection(projection)
 
 Promise.all([
   d3.json(require('/data/joined_data.json')),
-  d3.csv(require('/data/Public_Recycling_Bins.csv'))
+  d3.csv(require('/data/Public_Recycling_Bins.csv')),
+  d3.csv(require('/data/joined_and_tonnage.csv'))
 ])
   .then(ready)
   .catch(err => console.log('Failed on', err))
@@ -30,6 +28,10 @@ function ready([json, datapoints]) {
   const districts = topojson.feature(json, json.objects.joined_data)
   const center = d3.geoCentroid(districts)
   projection.center(center)
+  const colorScale = d3
+    .scaleLinear()
+    .domain([0, 1500])
+    .range(['white', 'red'])
 
   svg
     .selectAll('.districts-2')
@@ -41,7 +43,9 @@ function ready([json, datapoints]) {
     .attr('stroke', function(d) {
       return 'none'
     })
-    .attr('fill', 'lightgray')
+    .attr('fill', function(d) {
+      return colorScale(+d.properties.lots_industrial_manufacturing)
+    })
     .attr('opacity', 1)
 
   svg
