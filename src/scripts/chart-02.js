@@ -19,7 +19,8 @@ const path = d3.geoPath().projection(projection)
 Promise.all([
   d3.json(require('/data/joined_data.json')),
   d3.csv(require('/data/Public_Recycling_Bins.csv')),
-  d3.csv(require('/data/joined_and_tonnage.csv'))
+  d3.csv(require('/data/joined_and_tonnage.csv')),
+  d3.csv(require('/data/racing_bar_chart.csv'))
 ])
   .then(ready)
   .catch(err => console.log('Failed on', err))
@@ -30,8 +31,8 @@ function ready([json, datapoints]) {
   projection.center(center)
   const colorScale = d3
     .scaleLinear()
-    .domain([0, 1500])
-    .range(['white', 'red'])
+    .domain([10, 65])
+    .range(['white', 'navy'])
 
   svg
     .selectAll('.districts-2')
@@ -44,7 +45,7 @@ function ready([json, datapoints]) {
       return 'none'
     })
     .attr('fill', function(d) {
-      return colorScale(+d.properties.lots_industrial_manufacturing)
+      return colorScale(+d.properties.pct_foreign_born)
     })
     .attr('opacity', 1)
 
@@ -56,7 +57,7 @@ function ready([json, datapoints]) {
     .attr('r', 2)
     .attr('class', 'bins')
     .attr('stroke', 'none')
-    .attr('opacity', 0.75)
+    .attr('opacity', 0.9)
     .attr('fill', 'green')
     .attr('transform', function(d) {
       const coords = [d.Longitude, d.Latitude]
