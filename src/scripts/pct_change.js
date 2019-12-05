@@ -33,7 +33,7 @@ const tip = d3
     <p>2018: ${d3.format('.0%')(d.properties.pct_recyc_2018)}</p>
     <p>2009: ${d3.format('.0%')(d.properties.pct_recyc_2009)}</p>
     <hr>
-    <p>${d3.format('.0%')(d.properties.pct_change)}`
+    <p>Change: ${d3.format('.0%')(d.properties.pct_change)}`
   })
 
 d3.json(require('/data/joined_data.json'))
@@ -56,6 +56,12 @@ function ready(datapoints) {
   const povertyExtent = d3.extent(
     districts.features.map(d => d.properties.poverty_rate)
   )
+
+  // this will be for another graph
+  const bronxFiltered = districts.features.filter(
+    d => String(d.properties.borocd)[0] === '3'
+  )
+  // console.log(bronxFiltered)
 
   svg
     .selectAll('.districts')
@@ -114,10 +120,6 @@ function ready(datapoints) {
 
   svg.call(tip)
 
-  // const updatePoverty = level => {
-  //   slider.attr('value', level)
-  // }
-
   const slider = d3
     .select('#myRange')
     .attr('type', 'range')
@@ -125,32 +127,12 @@ function ready(datapoints) {
     .attr('max', 37)
     .attr('step', 4)
     .style('visibility', 'hidden')
-  //   .on('input', function() {
-  //     const value = this.value
 
-  //     d3.selectAll('.districts').attr('fill', function(d) {
-  //       if (d.properties.poverty_rate < value) {
-  //         return 'lightgray'
-  //       } else {
-  //         if (+d.properties.pct_change > 0) {
-  //           return colorScalePositive(+d.properties.pct_change)
-  //         } else if (+d.properties.pct_change < 0) {
-  //           return colorScaleNegative(+d.properties.pct_change)
-  //         } else {
-  //           return 'lightgray'
-  //         }
-  //       }
-  //     })
-  //     updatePoverty(value)
-  //   })
-
-  // updatePoverty(7)
-
-  let counter = 7
+  let counter = 5
   function f() {
-    counter = counter + 2
-    if (counter > 37) {
-      counter = 7
+    counter = counter + 5
+    if (counter > 41) {
+      counter = 5
     }
 
     // console.log(counter)
@@ -175,7 +157,7 @@ function ready(datapoints) {
     return true
   }
 
-  setInterval(f, 700)
+  setInterval(f, 1000)
 
   function render() {
     const svgContainer = svg.node().closest('div')
@@ -194,18 +176,34 @@ function ready(datapoints) {
 
     // Update things you draw
     svg.selectAll('.districts').attr('d', path)
-    svg
-      .select('.poverty-level-percent')
-      .attr('x', newWidth / 5)
-      .attr('y', newHeight * 0.45)
-    svg
-      .select('.poverty-level-poverty')
-      .attr('x', newWidth / 5)
-      .attr('y', newHeight * 0.5)
-    svg
-      .select('.poverty-level-rate')
-      .attr('x', newWidth / 5)
-      .attr('y', newHeight * 0.555)
+
+    if (svgContainer.offsetWidth < 450) {
+      svg
+        .select('.poverty-level-percent')
+        .attr('x', newWidth / 25)
+        .attr('y', newHeight * 0.45)
+      svg
+        .select('.poverty-level-poverty')
+        .attr('x', newWidth / 25)
+        .attr('y', newHeight * 0.5)
+      svg
+        .select('.poverty-level-rate')
+        .attr('x', newWidth / 25)
+        .attr('y', newHeight * 0.555)
+    } else {
+      svg
+        .select('.poverty-level-percent')
+        .attr('x', newWidth / 7)
+        .attr('y', newHeight * 0.45)
+      svg
+        .select('.poverty-level-poverty')
+        .attr('x', newWidth / 7)
+        .attr('y', newHeight * 0.5)
+      svg
+        .select('.poverty-level-rate')
+        .attr('x', newWidth / 7)
+        .attr('y', newHeight * 0.555)
+    }
   }
 
   window.addEventListener('resize', render)

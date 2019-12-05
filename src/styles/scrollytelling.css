@@ -5,7 +5,7 @@ Begin responsive design and scrollytelling
 */
 
 svg {
-  display: block;
+  display: flexbox;
 }
 
 /* Scrollytelling sections can be wider than the normal 700px width */
