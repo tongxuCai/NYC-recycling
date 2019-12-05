@@ -56,7 +56,7 @@ function ready([json, datapoints]) {
     .attr('r', 2)
     .attr('class', 'bins')
     .attr('stroke', 'none')
-    .attr('opacity', 0.55)
+    .attr('opacity', 0.75)
     .attr('fill', 'green')
     .attr('transform', function(d) {
       const coords = [d.Longitude, d.Latitude]
