@@ -8,7 +8,7 @@ const margin = { top: 10, left: 10, right: 10, bottom: 10 }
 const height = 100 - margin.top - margin.bottom
 const width = 100 - margin.left - margin.right
 
-const container = d3.select('#bronx-chart')
+const container = d3.select('#manhattan-chart')
 
 const projection = d3.geoMercator().translate([width / 2, height / 2])
 const path = d3.geoPath().projection(projection)
@@ -46,18 +46,18 @@ function ready(datapoints) {
   radiusScale.domain(d3.extent(percentRecycledExtent))
 
   // this will be for another graph
-  const bronxFiltered = districts.features.filter(
-    d => String(d.properties.borocd)[0] === '3'
+  const manhattanFiltered = districts.features.filter(
+    d => String(d.properties.borocd)[0] === '1'
   )
 
-  bronxFiltered.sort(function(a, b) {
+  manhattanFiltered.sort(function(a, b) {
     return a.properties.pct_change - b.properties.pct_change
   })
-  // console.log(bronxFiltered)
+  // console.log(manhattanFiltered)
 
   container
-    .selectAll('.bronxDistricts')
-    .data(bronxFiltered)
+    .selectAll('.manhattanDistricts')
+    .data(manhattanFiltered)
     .enter()
     .append('svg')
     .style('display', 'flexbox')
@@ -74,7 +74,7 @@ function ready(datapoints) {
 
       svg
         .append('path')
-        .attr('class', 'bronx')
+        .attr('class', 'manhattan')
         .attr('d', path)
         .attr('stroke', 'lightgray')
         .attr('fill', function(d) {

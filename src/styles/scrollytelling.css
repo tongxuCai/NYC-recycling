@@ -43,7 +43,7 @@ svg {
   position: sticky;
   top: 0;
   z-index: 0;
-  height: 50vh;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -62,8 +62,8 @@ svg {
   margin: 0 auto;
   margin-bottom: 80vh;
   padding: 30px;
-  background: rgba(255, 255, 255, 0.80);
-  border: solid black 1px;
+  background: rgba(245, 245, 245, 0.8);
+  /* border: solid black 1px; */
   pointer-events: auto;
 }
 

@@ -34,6 +34,7 @@ img {
 .header {
     padding-top:20px;
     padding-bottom:20px;
+    text-align: center;
 }
 
 .story-body, .header, .chart-section, .footer {
@@ -76,12 +77,32 @@ p.kicker {
     text-align:center;
 }
 
-h1.headline {
-    font-size: 4rem;
-    line-height: 1.1;
+/* .text-box {
+    display: flexbox;
+} */
+
+#myRange {
+    visibility: hidden;
+}
+
+.headline {
+    line-height: .9;
     margin-bottom: 0.25rem;
     margin-top: 1rem;
-    font-weight: 800;
+    background: url("https://cdn.pixabay.com/photo/2019/12/04/20/24/bottles-4673606_960_720.jpg");
+    background-size: cover;
+    background-position: center;
+    -webkit-background-clip: text;
+    color: #00000047;
+    text-transform: uppercase;
+    font-size: 4rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+    text-align: center;
 }
 
 h2.subhead {

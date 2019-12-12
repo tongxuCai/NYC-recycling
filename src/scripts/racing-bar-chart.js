@@ -26,10 +26,8 @@ const widthScale = d3
   .domain([0, 55])
   .range([0, width])
 const pointScale = d3.scalePoint().range([height, 0])
-const bandScale = d3
-  .scaleBand()
-  .range([height, 0])
-  .paddingInner(0.4)
+const bandScale = d3.scaleBand().range([height, 0])
+// .paddingInner(0.4)
 
 d3.csv(require('/data/racing_bar_chart.csv'))
   .then(ready)
@@ -69,66 +67,65 @@ function ready(datapoints) {
     })
     .attr('fill', d => colorScale(String(d.boro_cd)[0]))
 
-  // svg
-  //   .selectAll('.districts-2009')
-  //   .data(sorted)
-  //   .enter()
-  //   .append('rect')
-  //   .attr('class', 'districts-2009')
-  //   .attr('x', d => widthScale(+d.pct_recycled_2009))
-  //   .attr('y', d => bandScale(d.boro_cd))
-  //   .attr('height', 5)
-  //   .attr('width', 5)
-  //   .attr('fill', 'lightgray')
+  svg
+    .selectAll('.districts-2009')
+    .data(sorted)
+    .enter()
+    .append('circle')
+    .attr('class', 'districts-2009')
+    .attr('cx', d => widthScale(+d.pct_recycled_2009))
+    .attr('cy', d => pointScale(d.boro_cd))
+    .attr('r', 4)
+    .attr('fill', 'lightgray')
 
-  // svg
-  //   .selectAll('.districts-2018')
-  //   .data(sorted)
-  //   .enter()
-  //   .append('circle')
-  //   .attr('class', 'districts-2018')
-  //   .attr('cx', d => widthScale(+d.pct_recycled_annum))
-  //   .attr('cy', d => pointScale(d.boro_cd))
-  //   .attr('r', 2.5)
-  //   .attr('fill', 'lightgray')
+  svg
+    .selectAll('.districts-2018')
+    .data(sorted)
+    .enter()
+    .append('circle')
+    .attr('class', 'districts-2018')
+    .attr('cx', d => widthScale(+d.pct_recycled_annum))
+    .attr('cy', d => pointScale(d.boro_cd))
+    .attr('r', 4)
+    .attr('fill', 'lightgray')
 
-  function render() {
-    const svgContainer = svg.node().closest('div')
-    const svgWidth = svgContainer.offsetWidth
-    const svgHeight = height + margin.top + margin.bottom
+  // function render() {
+  //   const svgContainer = svg.node().closest('div')
+  //   const svgWidth = svgContainer.offsetWidth
+  //   const svgHeight = height + margin.top + margin.bottom
 
-    const actualSvg = d3.select(svg.node().closest('svg'))
-    actualSvg.attr('width', svgWidth).attr('height', svgHeight)
+  //   const actualSvg = d3.select(svg.node().closest('svg'))
+  //   actualSvg.attr('width', svgWidth).attr('height', svgHeight)
 
-    const newWidth = svgWidth - margin.left - margin.right
-    const newHeight = svgHeight - margin.top - margin.bottom
+  //   const newWidth = svgWidth - margin.left - margin.right
+  //   const newHeight = svgHeight - margin.top - margin.bottom
 
-    // Update our scale
-    widthScale.range([0, newWidth])
-    bandScale.range([0, newWidth])
-    pointScale.range([0, newWidth])
+  //   // Update our scale
+  //   widthScale.range([0, newWidth])
+  //   bandScale.range([0, newWidth])
+  //   pointScale.range([0, newWidth])
 
-    // Update things you draw
-    svg
-      .selectAll('.districts-line')
-      .attr('x', function(d) {
-        if (+d.pct_recycled_2009 > +d.pct_recycled_annum) {
-          return widthScale(+d.pct_recycled_annum)
-        } else {
-          return widthScale(+d.pct_recycled_2009)
-        }
-      })
-      .attr('y', d => bandScale(d.boro_cd) + 2)
-      .attr('height', bandScale.bandwidth())
-      .attr('width', function(d) {
-        if (+d.pct_recycled_2009 > +d.pct_recycled_annum) {
-          return widthScale(+d.pct_recycled_2009 - +d.pct_recycled_annum)
-        } else {
-          return widthScale(+d.pct_recycled_annum - +d.pct_recycled_2009)
-        }
-      })
-  }
+  //   // Update things you draw
+  //   svg
+  //     .selectAll('.districts-line')
+  //     .attr('x', function(d) {
+  //       if (+d.pct_recycled_2009 > +d.pct_recycled_annum) {
+  //         return widthScale(+d.pct_recycled_annum)
+  //       } else {
+  //         return widthScale(+d.pct_recycled_2009)
+  //       }
+  //     })
+  //     .attr('y', d => bandScale(d.boro_cd) + 2)
+  //     .attr('height', bandScale.bandwidth())
+  //     .attr('width', function(d) {
+  //       if (+d.pct_recycled_2009 > +d.pct_recycled_annum) {
+  //         return widthScale(+d.pct_recycled_2009 - +d.pct_recycled_annum)
+  //       } else {
+  //         return widthScale(+d.pct_recycled_annum - +d.pct_recycled_2009)
+  //       }
+  //     })
+  // }
 
-  window.addEventListener('resize', render)
-  render()
+  // window.addEventListener('resize', render)
+  // render()
 }

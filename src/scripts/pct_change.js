@@ -42,8 +42,10 @@ d3.json(require('/data/joined_data.json'))
 
 function ready(datapoints) {
   const districts = topojson.feature(datapoints, datapoints.objects.joined_data)
-  const center = d3.geoCentroid(districts)
-  projection.center(center)
+  console.log(districts)
+
+  // const center = d3.geoCentroid(districts)
+  // projection.center(center)
   projection.fitSize([width, height], districts)
 
   const percentRecycledExtent = districts.features.map(
@@ -57,18 +59,19 @@ function ready(datapoints) {
     districts.features.map(d => d.properties.poverty_rate)
   )
 
-  // this will be for another graph
-  const bronxFiltered = districts.features.filter(
-    d => String(d.properties.borocd)[0] === '3'
-  )
-  // console.log(bronxFiltered)
-
   svg
     .selectAll('.districts')
     .data(districts.features)
     .enter()
     .append('path')
     .attr('class', 'districts')
+    .attr('id', function(d) {
+      if (String(d.properties.boro_cd)[0] === '1') {
+        return 'manhattan'
+      } else {
+        return 'notmanhattan'
+      }
+    })
     .attr('d', path)
     .attr('stroke', function(d) {
       return 'none'
@@ -83,41 +86,45 @@ function ready(datapoints) {
       }
     })
     .attr('opacity', 1)
-    .on('mouseover', tip.show)
-    .on('mouseout', tip.hide)
-    .on('mouseenter', function() {
-      d3.select(this)
-        .raise()
-        .transition()
-        .style('transform', 'scale(1.15,1.15)')
-        .attr('stroke', '#444')
-    })
-    .on('mouseleave', function() {
-      d3.select(this)
-        .lower()
-        .transition()
-        .style('transform', 'scale(1,1)')
-        .attr('stroke', 'none')
-    })
+  // .on('mouseover', tip.show)
+  // .on('mouseout', tip.hide)
+  // .on('mouseenter', function() {
+  //   d3.select(this)
+  //     .raise()
+  //     .transition()
+  //     .style('transform', 'scale(1.15,1.15)')
+  //     .attr('stroke', '#444')
+  // })
+  // .on('mouseleave', function() {
+  //   d3.select(this)
+  //     .lower()
+  //     .transition()
+  //     .style('transform', 'scale(1,1)')
+  //     .attr('stroke', 'none')
+  // })
 
   svg
     .append('text')
     .style('font-weight', 600)
     .style('font-size', 42)
     .attr('class', 'poverty-level-percent')
+    .attr('id', 'text')
   svg
     .append('text')
     .style('font-weight', 400)
     .style('font-size', 32)
     .attr('class', 'poverty-level-poverty')
     .text('poverty')
+    .attr('id', 'text')
   svg
     .append('text')
     .style('font-weight', 400)
     .style('font-size', 32)
     .attr('class', 'poverty-level-rate')
     .text('rate')
+    .attr('id', 'text')
 
+  d3.selectAll('#text').style('visibility', 'hidden')
   svg.call(tip)
 
   const slider = d3
@@ -126,18 +133,17 @@ function ready(datapoints) {
     .attr('min', 4)
     .attr('max', 37)
     .attr('step', 4)
-    .style('visibility', 'hidden')
 
   let counter = 5
   function f() {
     counter = counter + 5
-    if (counter > 41) {
+    if (counter > 31) {
       counter = 5
     }
 
     // console.log(counter)
     slider.attr('value', counter)
-    d3.select('.poverty-level-percent').text(counter + '%')
+    d3.select('.poverty-level-percent').text('>' + counter + '%')
 
     d3.selectAll('.districts').attr('fill', function(d) {
       if (d.properties.poverty_rate < counter) {
@@ -156,8 +162,7 @@ function ready(datapoints) {
 
     return true
   }
-
-  setInterval(f, 1000)
+  // setInterval(f, 1250)
 
   function render() {
     const svgContainer = svg.node().closest('div')
@@ -171,7 +176,7 @@ function ready(datapoints) {
     const newHeight = svgHeight - margin.top - margin.bottom
 
     // Update our scale
-    projection.center(center)
+    // projection.center(center)
     projection.fitSize([newWidth, newHeight], districts)
 
     // Update things you draw
@@ -204,6 +209,81 @@ function ready(datapoints) {
         .attr('x', newWidth / 7)
         .attr('y', newHeight * 0.555)
     }
+
+    // responsiveness
+    d3.selectAll('#step1').on('stepin', function() {
+      svg.selectAll('#text').style('visibility', 'visible')
+      // projection.center(center)
+      projection.fitSize([newWidth, newHeight], districts)
+
+      svg
+        .selectAll('.districts')
+        .transition()
+        .duration(1000)
+        .ease(d3.easeQuad)
+        .attr('d', path)
+
+      svg
+        .selectAll('#notmanhattan')
+        .transition()
+        .delay(200)
+        .duration(1000)
+        .attr('visibility', 'visible')
+        .attr('opacity', 1)
+    })
+
+    d3.selectAll('#step2').on('stepin', function() {
+      // clearInterval(timer)
+      // svg.selectAll('#notmanhattan').style('visibility', 'hidden')
+      svg.selectAll('#text').attr('visibility', 'invisible')
+
+      const manhattanFiltered = districts.features.filter(
+        d => String(d.properties.boro_cd)[0] === '1'
+      )
+      manhattanFiltered.sort(function(a, b) {
+        return a.properties.pct_change - b.properties.pct_change
+      })
+      manhattanFiltered.forEach(function(d, i) {
+        d.properties.idx = i
+      })
+      const manhattanJSON = {
+        features: manhattanFiltered,
+        type: 'FeatureCollection'
+      }
+      projection.fitSize([newWidth, newHeight], manhattanJSON)
+
+      svg
+        .selectAll('#notmanhattan')
+        .transition()
+        .duration(500)
+        // .attr('visibility', 'hidden')
+        .attr('opacity', 0)
+      svg
+        .selectAll('#manhattan')
+        .attr('visibility', 'visible')
+        .transition()
+        .duration(1000)
+        .ease(d3.easeQuad)
+        .attr('d', path)
+    })
+
+    d3.selectAll('#step3').on('stepin', function() {
+      const heightScale = d3
+        .scaleLinear()
+        .domain([0, 40])
+        .range([0, 20])
+
+      svg
+        .selectAll('#manhattan')
+        .transition()
+        .duration(1000)
+        .attr('stroke', 'whitesmoke')
+        .attr('stroke-width', d => heightScale(d.properties.poverty_rate))
+      // .attr(
+      //   'transform',
+      //   d => `translate(0, ${heightScale(100 - +d.properties.poverty_rate)})`
+      // )
+    })
   }
 
   window.addEventListener('resize', render)
