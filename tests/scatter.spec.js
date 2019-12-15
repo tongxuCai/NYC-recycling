@@ -13,14 +13,14 @@ const chart = require('../src/scatter')
 
 describe('Testing the color scale', () => {
   test('Make sure Africa is the right color', () => {
-    let color = chart.colorScale('Africa')
+    const color = chart.colorScale('Africa')
     expect(color).toBe('#cbd5e8')
   })
 })
 
 describe('Clicking the buttons', () => {
   test('If I click Africa, african places become red', () => {
-    let circle = d3.select('circle')
+    const circle = d3.select('circle')
     expect(circle.attr('fill')).toBe('#b2e2cd')
 
     d3.select('#africa').dispatch('click')
