@@ -59,7 +59,7 @@ svg {
 
 .scrollytelling .step {
   max-width: 30rem;
-  margin: 0 auto;
+  margin: 75% auto 0 auto;
   margin-bottom: 80vh;
   padding: 30px;
   background: rgba(245, 245, 245, 0.8);

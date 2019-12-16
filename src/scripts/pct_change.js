@@ -86,7 +86,7 @@ function ready(datapoints) {
   svg
     .append('text')
     .style('font-weight', 600)
-    .style('font-size', 42)
+    .style('font-size', '42px')
     .attr('class', 'poverty-level-percent')
     .text('>15%')
     .attr('id', 'text')
@@ -94,7 +94,7 @@ function ready(datapoints) {
   svg
     .append('text')
     .style('font-weight', 400)
-    .style('font-size', 32)
+    .style('font-size', '32px')
     .attr('class', 'poverty-level-poverty')
     .text('poverty')
     .attr('id', 'text')
@@ -103,7 +103,7 @@ function ready(datapoints) {
   svg
     .append('text')
     .text('Graphic by Sawyer Click')
-    .style('font-size', 10)
+    .style('font-size', '10px')
     .attr('text-anchor', 'end')
     .attr('alignment-baseline', 'middle')
     .attr('class', 'credit')
@@ -128,21 +128,21 @@ function ready(datapoints) {
   svg
     .append('text')
     .text('+ percent')
-    .style('font-size', 16)
+    .style('font-size', '14px')
     .attr('text-anchor', 'start')
     .attr('alignment-baseline', 'middle')
     .attr('class', 'pos-text')
   svg
     .append('text')
     .text('no change')
-    .style('font-size', 16)
+    .style('font-size', '14px')
     .attr('text-anchor', 'start')
     .attr('alignment-baseline', 'middle')
     .attr('class', 'even-text')
   svg
     .append('text')
     .text('- percent')
-    .style('font-size', 16)
+    .style('font-size', '14px')
     .attr('text-anchor', 'start')
     .attr('alignment-baseline', 'middle')
     .attr('class', 'neg-text')
@@ -182,15 +182,15 @@ function ready(datapoints) {
     svg
       .selectAll('.pos-text')
       .attr('x', newWidth - 90)
-      .attr('y', newHeight - 80)
+      .attr('y', newHeight - 78.5)
     svg
       .selectAll('.even-text')
       .attr('x', newWidth - 90)
-      .attr('y', newHeight - 55)
+      .attr('y', newHeight - 53.5)
     svg
       .selectAll('.neg-text')
       .attr('x', newWidth - 90)
-      .attr('y', newHeight - 30)
+      .attr('y', newHeight - 28.5)
 
     svg
       .select('.credit')
@@ -203,7 +203,7 @@ function ready(datapoints) {
       .attr('y', newHeight * 0.4)
     svg
       .select('.poverty-level-poverty')
-      .attr('x', newWidth / 2.5)
+      .attr('x', newWidth / 2.4)
       .attr('y', newHeight * 0.46)
 
     // responsiveness
