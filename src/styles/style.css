@@ -33,7 +33,7 @@ img {
 
 .header {
     padding-top:20px;
-    padding-bottom:20px;
+    padding-bottom:5px;
     text-align: center;
 }
 
@@ -86,16 +86,16 @@ p.kicker {
 }
 
 .headline {
-    line-height: .9;
+    line-height: 1.1;
     margin-bottom: 0.25rem;
     margin-top: 1rem;
-    background: url("https://cdn.pixabay.com/photo/2019/12/04/20/24/bottles-4673606_960_720.jpg");
+    background: url("/images/recycling.jpg");
     background-size: cover;
     background-position: center;
     -webkit-background-clip: text;
     color: #00000047;
-    text-transform: uppercase;
-    font-size: 4rem;
+    /* text-transform: uppercase; */
+    font-size: 3.8rem;
     font-weight: 900;
     letter-spacing: 1px;
     -webkit-user-select: none;
@@ -106,8 +106,8 @@ p.kicker {
 }
 
 h2.subhead {
-    font-size: 1.4rem;
-    line-height: 2rem;
+    font-size: 1.35rem;
+    line-height: 1.6rem;
     margin-bottom:0;
     margin-top: 15px;
     font-weight: 400;
@@ -130,14 +130,21 @@ h3.section-head {
 .byline {
     font-size: 1.1rem;
     line-height: 1;
-    margin-top: 1.5rem;
-    font-weight: 500;
+    margin: 1rem auto .5rem auto;
+    font-weight: 400;
+}
+
+.byline > a {
+    font-size: 1.1rem;
+    text-decoration: none;
+    background-image: none;
+    font-weight: 400;
 }
 
 .date {
-    font-size: 0.85rem;
+    font-size: .85rem;
     line-height: 1;
-    margin-top: 10px;
+    margin-top: 5px;
     font-weight:400;
     text-transform:uppercase;
     letter-spacing:0.5px;
@@ -145,7 +152,7 @@ h3.section-head {
 
 
 p.note {
-    font-size:0.85rem;
+    font-size:0.75rem;
 }
 
 /* chart styles */
@@ -158,6 +165,28 @@ p.note {
 
 .story-body .chart-section {
     padding-top:0px;
+}
+
+.stop-left {
+    stop-color: #67000D;
+}
+
+.stop-mid {
+    stop-color: whitesmoke;
+}
+
+.stop-right {
+    stop-color: #0C5198;
+}
+
+.filled {
+    fill: url(#mainGradient);
+}
+
+.outlined {
+    fill:   none;
+    stroke: url(#mainGradient);
+    stroke-width: 4;
 }
 
 a {

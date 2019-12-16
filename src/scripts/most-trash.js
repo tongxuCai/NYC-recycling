@@ -93,6 +93,14 @@ function ready(datapoints) {
     .attr('alignment-baseline', 'middle')
     .attr('text-anchor', 'middle')
 
+  svg
+    .append('text')
+    .text('Graphic by Sawyer Click')
+    .style('font-size', 10)
+    .attr('text-anchor', 'end')
+    .attr('alignment-baseline', 'middle')
+    .attr('class', 'credit')
+
   function step(stepNum, column) {
     d3.select('#step-' + stepNum).on('stepin', function() {
       nested.sort(function(a, b) {
@@ -170,9 +178,15 @@ function ready(datapoints) {
 
     // Update our scale
     xPositionScale.range([0, newWidth])
-    radiusScale.range([5, newWidth * 0.11])
+    radiusScale.range([5, newWidth * 0.1])
 
     // Update things you draw
+
+    svg
+      .select('.credit')
+      .attr('x', newWidth + margin.right)
+      .attr('y', newHeight + margin.bottom / 2)
+
     svg
       .selectAll('.boroughs')
       .attr('cy', newHeight / 2)
@@ -181,7 +195,7 @@ function ready(datapoints) {
     svg
       .selectAll('.labels')
       .attr('y', newHeight / 2)
-      .attr('dy', 80)
+      .attr('dy', 60)
       .attr('x', d => xPositionScale(d.key))
 
     svg
@@ -191,11 +205,7 @@ function ready(datapoints) {
     svg.selectAll('.min').attr('x', xPositionScale(nested[0].key))
   }
 
-  // When the window resizes, run the function
-  // that redraws everything
   window.addEventListener('resize', render)
 
-  // And now that the page has loaded, let's just try
-  // to do it once before the page has resized
   render()
 }

@@ -22,49 +22,31 @@ const path = d3.geoPath().projection(projection)
 const colorScalePositive = d3.scaleSequential(d3.interpolateBlues)
 const colorScaleNegative = d3.scaleSequential(d3.interpolateReds)
 
-const radiusScale = d3.scaleSqrt().range([1, 20])
-
-const tip = d3
-  .tip()
-  .attr('class', 'tooltip')
-  .offset([-15, 0])
-  .html(function(d) {
-    return `<strong>${d.properties.cd_short_title}</strong>
-    <p>2018: ${d3.format('.0%')(d.properties.pct_recyc_2018)}</p>
-    <p>2009: ${d3.format('.0%')(d.properties.pct_recyc_2009)}</p>
-    <hr>
-    <p>Change: ${d3.format('.0%')(d.properties.pct_change)}`
-  })
-
 d3.json(require('/data/joined_data.json'))
   .then(ready)
   .catch(err => console.log('Failed with', err))
 
 function ready(datapoints) {
   const districts = topojson.feature(datapoints, datapoints.objects.joined_data)
-  console.log(districts)
 
-  // const center = d3.geoCentroid(districts)
-  // projection.center(center)
   projection.fitSize([width, height], districts)
 
-  const percentRecycledExtent = districts.features.map(
-    d => +d.properties.pct_change
-  )
-  colorScalePositive.domain([0, d3.max(percentRecycledExtent)])
-  colorScaleNegative.domain([0, d3.min(percentRecycledExtent)])
-  radiusScale.domain(d3.extent(percentRecycledExtent))
-
-  const povertyExtent = d3.extent(
-    districts.features.map(d => d.properties.poverty_rate)
-  )
+  const pctPtChange = districts.features.map(d => +d.properties.pct_change)
+  colorScalePositive.domain([0, d3.max(pctPtChange)])
+  colorScaleNegative.domain([0, d3.min(pctPtChange)])
 
   svg
-    .selectAll('.districts')
+    .selectAll('path')
     .data(districts.features)
     .enter()
     .append('path')
-    .attr('class', 'districts')
+    .attr('class', function(d) {
+      if (String(d.properties.boro_cd) === '101') {
+        return 'district-101'
+      } else {
+        return 'notDistrict-101'
+      }
+    })
     .attr('id', function(d) {
       if (String(d.properties.boro_cd)[0] === '1') {
         return 'manhattan'
@@ -82,12 +64,10 @@ function ready(datapoints) {
       } else if (+d.properties.pct_change < 0) {
         return colorScaleNegative(+d.properties.pct_change)
       } else {
-        return 'lightgray'
+        return '#d3d3d3'
       }
     })
     .attr('opacity', 1)
-  // .on('mouseover', tip.show)
-  // .on('mouseout', tip.hide)
   // .on('mouseenter', function() {
   //   d3.select(this)
   //     .raise()
@@ -108,7 +88,9 @@ function ready(datapoints) {
     .style('font-weight', 600)
     .style('font-size', 42)
     .attr('class', 'poverty-level-percent')
+    .text('>15%')
     .attr('id', 'text')
+    .attr('text-anchor', 'end')
   svg
     .append('text')
     .style('font-weight', 400)
@@ -116,53 +98,56 @@ function ready(datapoints) {
     .attr('class', 'poverty-level-poverty')
     .text('poverty')
     .attr('id', 'text')
+    .attr('text-anchor', 'end')
+
   svg
     .append('text')
-    .style('font-weight', 400)
-    .style('font-size', 32)
-    .attr('class', 'poverty-level-rate')
-    .text('rate')
-    .attr('id', 'text')
+    .text('Graphic by Sawyer Click')
+    .style('font-size', 10)
+    .attr('text-anchor', 'end')
+    .attr('alignment-baseline', 'middle')
+    .attr('class', 'credit')
 
-  d3.selectAll('#text').style('visibility', 'hidden')
-  svg.call(tip)
+  svg
+    .append('circle')
+    .attr('class', 'pos-circle')
+    .attr('r', 7)
+    .attr('fill', '#7DB7D9')
+  svg
+    .append('circle')
+    .attr('class', 'even-circle')
+    .attr('r', 7)
+    .attr('fill', 'whitesmoke')
+    .attr('stroke', '#333')
+  svg
+    .append('circle')
+    .attr('class', 'neg-circle')
+    .attr('r', 7)
+    .attr('fill', '#FB8060')
 
-  const slider = d3
-    .select('#myRange')
-    .attr('type', 'range')
-    .attr('min', 4)
-    .attr('max', 37)
-    .attr('step', 4)
+  svg
+    .append('text')
+    .text('+ percent')
+    .style('font-size', 16)
+    .attr('text-anchor', 'start')
+    .attr('alignment-baseline', 'middle')
+    .attr('class', 'pos-text')
+  svg
+    .append('text')
+    .text('no change')
+    .style('font-size', 16)
+    .attr('text-anchor', 'start')
+    .attr('alignment-baseline', 'middle')
+    .attr('class', 'even-text')
+  svg
+    .append('text')
+    .text('- percent')
+    .style('font-size', 16)
+    .attr('text-anchor', 'start')
+    .attr('alignment-baseline', 'middle')
+    .attr('class', 'neg-text')
 
-  let counter = 5
-  function f() {
-    counter = counter + 5
-    if (counter > 31) {
-      counter = 5
-    }
-
-    // console.log(counter)
-    slider.attr('value', counter)
-    d3.select('.poverty-level-percent').text('>' + counter + '%')
-
-    d3.selectAll('.districts').attr('fill', function(d) {
-      if (d.properties.poverty_rate < counter) {
-        return 'lightgray'
-      } else {
-        if (+d.properties.pct_change > 0) {
-          return colorScalePositive(+d.properties.pct_change)
-        } else if (+d.properties.pct_change < 0) {
-          return colorScaleNegative(+d.properties.pct_change)
-        } else {
-          return 'lightgray'
-        }
-      }
-    })
-    // updatePoverty(counter)
-
-    return true
-  }
-  // setInterval(f, 1250)
+  d3.selectAll('#text').attr('opacity', 0)
 
   function render() {
     const svgContainer = svg.node().closest('div')
@@ -176,67 +161,189 @@ function ready(datapoints) {
     const newHeight = svgHeight - margin.top - margin.bottom
 
     // Update our scale
-    // projection.center(center)
     projection.fitSize([newWidth, newHeight], districts)
 
     // Update things you draw
-    svg.selectAll('.districts').attr('d', path)
+    svg.selectAll('path').attr('d', path)
 
-    if (svgContainer.offsetWidth < 450) {
-      svg
-        .select('.poverty-level-percent')
-        .attr('x', newWidth / 25)
-        .attr('y', newHeight * 0.45)
-      svg
-        .select('.poverty-level-poverty')
-        .attr('x', newWidth / 25)
-        .attr('y', newHeight * 0.5)
-      svg
-        .select('.poverty-level-rate')
-        .attr('x', newWidth / 25)
-        .attr('y', newHeight * 0.555)
-    } else {
-      svg
-        .select('.poverty-level-percent')
-        .attr('x', newWidth / 7)
-        .attr('y', newHeight * 0.45)
-      svg
-        .select('.poverty-level-poverty')
-        .attr('x', newWidth / 7)
-        .attr('y', newHeight * 0.5)
-      svg
-        .select('.poverty-level-rate')
-        .attr('x', newWidth / 7)
-        .attr('y', newHeight * 0.555)
-    }
+    svg
+      .selectAll('.pos-circle')
+      .attr('cx', newWidth - 110)
+      .attr('cy', newHeight - 80)
+    svg
+      .selectAll('.even-circle')
+      .attr('cx', newWidth - 110)
+      .attr('cy', newHeight - 55)
+    svg
+      .selectAll('.neg-circle')
+      .attr('cx', newWidth - 110)
+      .attr('cy', newHeight - 30)
+
+    svg
+      .selectAll('.pos-text')
+      .attr('x', newWidth - 90)
+      .attr('y', newHeight - 80)
+    svg
+      .selectAll('.even-text')
+      .attr('x', newWidth - 90)
+      .attr('y', newHeight - 55)
+    svg
+      .selectAll('.neg-text')
+      .attr('x', newWidth - 90)
+      .attr('y', newHeight - 30)
+
+    svg
+      .select('.credit')
+      .attr('x', newWidth)
+      .attr('y', newHeight)
+
+    svg
+      .select('.poverty-level-percent')
+      .attr('x', newWidth / 2.4)
+      .attr('y', newHeight * 0.4)
+    svg
+      .select('.poverty-level-poverty')
+      .attr('x', newWidth / 2.5)
+      .attr('y', newHeight * 0.46)
 
     // responsiveness
     d3.selectAll('#step1').on('stepin', function() {
-      svg.selectAll('#text').style('visibility', 'visible')
-      // projection.center(center)
       projection.fitSize([newWidth, newHeight], districts)
 
-      svg
-        .selectAll('.districts')
-        .transition()
-        .duration(1000)
-        .ease(d3.easeQuad)
-        .attr('d', path)
+      const pctChange = districts.features.map(d => +d.properties.pct_change)
+      colorScalePositive.domain([0, d3.max(pctChange)])
+      colorScaleNegative.domain([0, d3.min(pctChange)])
 
       svg
-        .selectAll('#notmanhattan')
+        .selectAll('#text')
         .transition()
-        .delay(200)
-        .duration(1000)
-        .attr('visibility', 'visible')
-        .attr('opacity', 1)
+        .duration(500)
+        .ease(d3.easeQuad)
+        .attr('opacity', 0)
+
+      svg
+        .selectAll('path')
+        .transition()
+        .duration(500)
+        .ease(d3.easeQuad)
+        .attr('d', path)
+        .attr('fill', function(d) {
+          if (+d.properties.pct_change > 0) {
+            return colorScalePositive(+d.properties.pct_change)
+          } else if (+d.properties.pct_change < 0) {
+            return colorScaleNegative(+d.properties.pct_change)
+          } else {
+            return '#d3d3d3'
+          }
+        })
     })
 
     d3.selectAll('#step2').on('stepin', function() {
-      // clearInterval(timer)
-      // svg.selectAll('#notmanhattan').style('visibility', 'hidden')
-      svg.selectAll('#text').attr('visibility', 'invisible')
+      projection.fitSize([newWidth, newHeight], districts)
+      svg
+        .select('.poverty-level-percent')
+        .text('High')
+        .attr('fill', 'black')
+      svg.select('.poverty-level-poverty').text('poverty')
 
+      svg
+        .selectAll('#text')
+        .transition()
+        .duration(500)
+        .ease(d3.easeQuad)
+        .attr('opacity', 1)
+
+      svg
+        .selectAll('path')
+        .transition()
+        .delay(200)
+        .duration(500)
+        .ease(d3.easeQuad)
+        .attr('opacity', 1)
+        .attr('d', path)
+        .attr('fill', function(d) {
+          if (d.properties.poverty_rate < 15) {
+            return 'lightgray'
+          } else {
+            if (+d.properties.pct_change > 0) {
+              return colorScalePositive(+d.properties.pct_change)
+            } else if (+d.properties.pct_change < 0) {
+              return colorScaleNegative(+d.properties.pct_change)
+            } else {
+              return '#d3d3d3'
+            }
+          }
+        })
+        .attr('stroke', 'none')
+    })
+
+    d3.selectAll('#step3').on('stepin', function() {
+      projection.fitSize([newWidth, newHeight], districts)
+      svg
+        .select('.poverty-level-percent')
+        .text('Less')
+        .attr('fill', '#67000d')
+      svg.select('.poverty-level-poverty').text('recycling')
+      svg
+        .selectAll('#text')
+        .transition()
+        .duration(500)
+        .ease(d3.easeQuad)
+        .attr('opacity', 1)
+
+      svg
+        .selectAll('path')
+        .transition()
+        .delay(200)
+        .duration(500)
+        .ease(d3.easeQuad)
+        .attr('opacity', 1)
+        .attr('d', path)
+        .attr('fill', function(d) {
+          if (+d.properties.pct_change < 0) {
+            return colorScaleNegative(+d.properties.pct_change)
+          } else {
+            return '#d3d3d3'
+          }
+        })
+        .attr('stroke', 'none')
+    })
+    d3.selectAll('#step-').on('stepin', function() {
+      projection.fitSize([newWidth, newHeight], districts)
+      svg
+        .select('.poverty-level-percent')
+        .text('High')
+        .attr('fill', 'goldenrod')
+      svg.select('.poverty-level-poverty').text('income')
+
+      svg
+        .selectAll('#text')
+        .transition()
+        .duration(500)
+        .ease(d3.easeQuad)
+        .attr('opacity', 1)
+
+      svg
+        .selectAll('path')
+        .transition()
+        .delay(200)
+        .duration(500)
+        .ease(d3.easeQuad)
+        .attr('opacity', 1)
+        .attr('d', path)
+        .attr('fill', function(d) {
+          if (+d.properties.pct_change < 0) {
+            return colorScaleNegative(+d.properties.pct_change)
+          } else {
+            return '#d3d3d3'
+          }
+        })
+        .attr('stroke', function(d) {
+          return d.properties.fp_100_mhhi > 90000 ? 'goldenrod' : 'none'
+        })
+        .attr('stroke-width', 3)
+    })
+    d3.selectAll('#step4').on('stepin', function() {
       const manhattanFiltered = districts.features.filter(
         d => String(d.properties.boro_cd)[0] === '1'
       )
@@ -253,36 +360,51 @@ function ready(datapoints) {
       projection.fitSize([newWidth, newHeight], manhattanJSON)
 
       svg
+        .selectAll('#text')
+        .transition()
+        .duration(250)
+        .ease(d3.easeQuad)
+        .attr('opacity', 0)
+
+      svg
         .selectAll('#notmanhattan')
         .transition()
-        .duration(500)
-        // .attr('visibility', 'hidden')
+        .duration(250)
         .attr('opacity', 0)
+
       svg
         .selectAll('#manhattan')
         .attr('visibility', 'visible')
         .transition()
-        .duration(1000)
+        .duration(500)
         .ease(d3.easeQuad)
         .attr('d', path)
+        .attr('opacity', 1)
+        .attr('stroke', function(d) {
+          return d.properties.fp_100_mhhi > 90000 ? 'goldenrod' : 'none'
+        })
+        .attr('stroke-width', 3)
     })
 
-    d3.selectAll('#step3').on('stepin', function() {
-      const heightScale = d3
-        .scaleLinear()
-        .domain([0, 40])
-        .range([0, 20])
+    d3.selectAll('#step5').on('stepin', function() {
+      svg
+        .selectAll('.notDistrict-101')
+        .transition()
+        .duration(500)
+        .ease(d3.easeQuad)
+        .attr('opacity', 0.2)
+      svg
+        .selectAll('#notmanhattan')
+        .transition()
+        .duration(500)
+        .attr('opacity', 0)
 
       svg
-        .selectAll('#manhattan')
+        .select('.district-101')
         .transition()
-        .duration(1000)
-        .attr('stroke', 'whitesmoke')
-        .attr('stroke-width', d => heightScale(d.properties.poverty_rate))
-      // .attr(
-      //   'transform',
-      //   d => `translate(0, ${heightScale(100 - +d.properties.poverty_rate)})`
-      // )
+        .duration(500)
+        .ease(d3.easeQuad)
+        .attr('opacity', 1)
     })
   }
 
