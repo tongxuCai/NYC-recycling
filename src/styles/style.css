@@ -40,7 +40,7 @@ img {
 .story-body, .header, .chart-section, .footer {
     margin:auto;
     max-width: 700px;
-    padding-top:28px;
+    padding-top:10px;
 }
 
 .footer {
