@@ -1,3 +1,5 @@
+SOMA, if you're reading this, it'll be done in the next few days. I'm tweaking some viz and adding reporting.
+
 # ✨ For High Society, Less Recycling ✨
 We're looking at the relationship between recycling in New York City's community districts and its wealth. This project was created by Sawyer Click, Frida Cai and Aseem Shukla for the final project in Soma's Storytelling class at Columbia Journalism School.
 
