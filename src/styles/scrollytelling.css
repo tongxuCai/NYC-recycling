@@ -65,6 +65,7 @@ svg {
   background: rgba(245, 245, 245, 0.8);
   /* border: solid black 1px; */
   pointer-events: auto;
+  z-index: -1;
 }
 
 .scrollytelling .step *:first-child {

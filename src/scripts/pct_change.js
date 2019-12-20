@@ -31,6 +31,21 @@ function ready(datapoints) {
 
   projection.fitSize([width, height], districts)
 
+  // filtering for only manhattan so i can "zoom"
+  const manhattanFiltered = districts.features.filter(
+    d => String(d.properties.boro_cd)[0] === '1'
+  )
+  manhattanFiltered.sort(function(a, b) {
+    return a.properties.pct_change - b.properties.pct_change
+  })
+  manhattanFiltered.forEach(function(d, i) {
+    d.properties.idx = i
+  })
+  const manhattanJSON = {
+    features: manhattanFiltered,
+    type: 'FeatureCollection'
+  }
+
   const pctPtChange = districts.features.map(d => +d.properties.pct_change)
   colorScalePositive.domain([0, d3.max(pctPtChange)])
   colorScaleNegative.domain([0, d3.min(pctPtChange)])
@@ -344,19 +359,6 @@ function ready(datapoints) {
         .attr('stroke-width', 3)
     })
     d3.selectAll('#step4').on('stepin', function() {
-      const manhattanFiltered = districts.features.filter(
-        d => String(d.properties.boro_cd)[0] === '1'
-      )
-      manhattanFiltered.sort(function(a, b) {
-        return a.properties.pct_change - b.properties.pct_change
-      })
-      manhattanFiltered.forEach(function(d, i) {
-        d.properties.idx = i
-      })
-      const manhattanJSON = {
-        features: manhattanFiltered,
-        type: 'FeatureCollection'
-      }
       projection.fitSize([newWidth, newHeight], manhattanJSON)
 
       svg
@@ -387,6 +389,7 @@ function ready(datapoints) {
     })
 
     d3.selectAll('#step5').on('stepin', function() {
+      projection.fitSize([newWidth, newHeight], manhattanJSON)
       svg
         .selectAll('.notDistrict-101')
         .transition()

@@ -43,6 +43,12 @@ img {
     padding-top:10px;
 }
 
+.story-body-full {
+    margin: auto;
+    max-width: 950px;
+    padding-top: 10px;
+}
+
 .footer {
     padding-top:20px;
     padding-bottom:20px;
@@ -211,7 +217,7 @@ h2.chart-headline {
 }
 
 p.chart-description {
-    margin-top: 14px;
+    margin-top: 3px;
     margin-bottom: 0;
 }
 
