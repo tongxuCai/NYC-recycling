@@ -1,6 +1,6 @@
 import * as d3 from 'd3'
 
-const margin = { top: 20, left: 50, right: 50, bottom: 20 }
+const margin = { top: 20, left: 75, right: 75, bottom: 50 }
 const height = 200 - margin.top - margin.bottom
 const width = 600 - margin.left - margin.right
 
@@ -16,6 +16,9 @@ const xPositionScale = d3.scalePoint().range([0, width])
 const radiusScale = d3.scaleSqrt()
 const colorScale = d3.scaleOrdinal(d3.schemePastel1)
 
+const povertyXScale = d3.scaleLinear().domain([0, 50])
+const povertyYScale = d3.scaleLinear().domain([0, 40])
+
 d3.csv(require('/data/joined_and_tonnage.csv'))
   .then(ready)
   .catch(err => {
@@ -24,7 +27,7 @@ d3.csv(require('/data/joined_and_tonnage.csv'))
 
 function ready(datapoints) {
   const filtered = datapoints.filter(function(d) {
-    if (+d.year === 2018) {
+    if (d.year === '2018') {
       return d
     }
   })
@@ -35,7 +38,9 @@ function ready(datapoints) {
       return {
         poverty_rate: d3.mean(d, f => f.poverty_rate),
         pct_change: d3.mean(d, f => f.pct_change),
-        BOROUGH: d[0].BOROUGH
+        BOROUGH: d[0].BOROUGH,
+        pct_2009: d3.mean(d, f => f.pct_recyc_2009 * 100),
+        pct_2018: d3.mean(d, f => f.pct_recyc_2018 * 100)
       }
     })
     .entries(filtered)
@@ -45,19 +50,20 @@ function ready(datapoints) {
     .key(d => d.BOROUGH)
     .rollup(function(d) {
       return {
-        totalWaste: d3.sum(d, f => +f.REFUSETONSCOLLECTED + f.total_recycled),
+        totalWaste: d3.sum(d, f => +f.REFUSETONSCOLLECTED + +f.total_recycled),
         meanWaste: d3.median(d, f => +f.REFUSETONSCOLLECTED),
         totalRecycled: d3.sum(d, f => +f.total_recycled),
         povertyRate: d3.median(d, f => +f.poverty_rate),
-        pct2009: d3.mean(d, f => +f.pct_recyc_2009) * 100,
-        pct2018: d3.mean(d, f => +f.pct_recyc_2018) * 100,
-        pctChange: d3.mean(d, f => +f.pct_change) * 100
+        pct2009: d3.mean(d, f => +f.pct_recyc_2009),
+        pct2018: d3.mean(d, f => +f.pct_recyc_2018),
+        pctChange: d3.mean(d, f => +f.pct_change)
       }
     })
     .entries(filtered)
+  console.log(nested)
 
   nested.forEach(function(d) {
-    d.value.pctRecycled = (d.value.totalRecycled / d.value.totalWaste) * 100
+    d.value.pctRecycled = d.value.totalRecycled / d.value.totalWaste
   })
 
   const keys = nested.map(d => d.key)
@@ -110,7 +116,7 @@ function ready(datapoints) {
     .text('Graphic by Sawyer Click')
     .style('font-size', '10px')
     .attr('text-anchor', 'end')
-    .attr('alignment-baseline', 'middle')
+    .attr('alignment-baseline', 'bottom')
     .attr('class', 'credit')
 
   svg
@@ -145,11 +151,15 @@ function ready(datapoints) {
     xPositionScale.range([0, newWidth])
     radiusScale.range([5, newWidth * 0.09])
 
+    povertyXScale.range([0, newWidth])
+    povertyYScale.range([newHeight, 0])
+
     // Update things you draw
     svg
       .select('.credit')
       .attr('x', newWidth + margin.right)
-      .attr('y', newHeight + margin.bottom / 2)
+      .attr('y', newHeight)
+      .attr('dy', 40)
 
     svg
       .selectAll('.boroughs')
@@ -244,22 +254,20 @@ function ready(datapoints) {
           .attr('fill', '#444')
           .attr('opacity', 1)
           .attr('dy', 70)
+
+        svg
+          .selectAll('.axis')
+          .transition()
+          .duration(200)
+          .attr('opacity', 0)
       })
     }
-    console.log(nested)
+
     step(1, 'totalWaste')
     step(2, 'totalRecycled')
     step(3, 'pctRecycled')
 
     d3.selectAll('#step-4').on('stepin', function() {
-      const povertyXScale = d3.scaleLinear().range([0, newWidth])
-      const povertyExtent = filtered.map(d => +d.poverty_rate)
-      povertyXScale.domain(d3.extent(povertyExtent))
-
-      const povertyYScale = d3.scaleLinear().range([newHeight, 0])
-      const percentRecycledExtent = filtered.map(d => +d.pct_change)
-      povertyYScale.domain(d3.extent(percentRecycledExtent))
-
       svg
         .selectAll('.boroughs')
         .transition()
@@ -270,16 +278,53 @@ function ready(datapoints) {
         .selectAll('.districts')
         .attr('cx', d => xPositionScale(d.value.BOROUGH))
         .attr('cy', newHeight / 3)
-        .attr('r', 7)
+        .attr('r', 3)
         .attr('fill', d => colorScale(d.value.BOROUGH))
         .transition()
         .duration(700)
         .ease(d3.easeQuadInOut)
-        .attr('opacity', 1)
-        .attr('cx', d => povertyXScale(+d.value.poverty_rate))
-        .attr('cy', d => povertyYScale(+d.value.pct_change))
+        .attr('opacity', 0.7)
+        .attr('cx', d => povertyXScale(+d.value.pct_2009))
+        .attr('cy', d => povertyYScale(+d.value.poverty_rate))
 
       svg.selectAll('text').attr('opacity', 0)
+      svg.selectAll('.credit').attr('opacity', 1)
+
+      svg
+        .selectAll('.axis')
+        .transition()
+        .duration(200)
+        .attr('opacity', 1)
+
+      const yAxis = d3.axisLeft(povertyYScale).ticks(3)
+      // .tickFormat(d3.format())
+      svg
+        .append('g')
+        .attr('class', 'axis y-axis')
+        .call(yAxis)
+
+      const xAxis = d3.axisBottom(povertyXScale).ticks(5)
+      svg
+        .append('g')
+        .attr('class', 'axis x-axis')
+        .attr('transform', 'translate(0,' + newHeight + ')')
+        .call(xAxis)
+    })
+
+    d3.selectAll('#step-5').on('stepin', function() {
+      svg
+        .selectAll('.boroughs')
+        .transition()
+        .duration(250)
+        .attr('opacity', 0)
+
+      svg
+        .selectAll('.districts')
+        .transition()
+        .duration(700)
+        .ease(d3.easeQuadInOut)
+        .attr('cx', d => povertyXScale(+d.value.pct_2018))
+        .attr('cy', d => povertyYScale(+d.value.poverty_rate))
     })
   }
 
